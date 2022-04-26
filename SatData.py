@@ -37,8 +37,7 @@ class SatData:
         for data in self._data:
             if data[8] in dbns:
                 storage.append(data)
-
-        storage = storage.sorted()
+            storage = storage.sort()
 
         with open('output.csv', 'w') as outfile:
             header = [str(i) for i in range(len(storage[0]))]
