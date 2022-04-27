@@ -11,7 +11,6 @@
 # (see note below about commas that are part of field names). You'll see an example of CSV format below.
 # There is a csv module for Python, but you will not use it for this project.
 import json
-import requests
 
 
 class SatData:
@@ -21,6 +20,7 @@ class SatData:
     Any data members of the SatData class must be private.
     """
     def __init__(self):
+
         with open('sat.json', 'r') as infile:
             self._data = json.load(infile)['data']
 
@@ -33,27 +33,30 @@ class SatData:
         present in the JSON file. The rows in the CSV file must be sorted in ascending order by DBN. The name
         of the output file must be output.csv.
         """
-        storage = []
+        header = "DBN,School Name,Number of Test Takers,Critical Reading Mean,Mathematics Mean,Writing Mean"
+        information = []
+
+        # loop to turn get desired json data and struture it to fit csv format
         for data in self._data:
             if data[8] in dbns:
-                storage.append(data)
-            storage = storage.sort()
+                if "," in data[9]:
+                    comma_stripped_or_not = '"' + data[9] + '"'
+                else:
+                    comma_stripped_or_not = data[9]
 
-        with open('output.csv', 'w') as outfile:
-            header = [str(i) for i in range(len(storage[0]))]
-            outfile.write(','.join(header))
-            outfile.write('\n')
+                schools_information = data[8] + "," + comma_stripped_or_not + "," + data[10] + "," + data[11] + "," + data[12] + "," + data[13], '\n'
+                information.append(schools_information)
 
-            for row in storage:
-                data_from_row = []
-                for index in row:
-                    if ',' in str(index):
-                        data_from_row.append("\""+index+"\"")
-                    else:
-                        data_from_row.append(str(index))
+        information.sort()
 
-                    outfile.write('.'.join(data_from_row))
-                    outfile.write('\n')
+        #write structure data from above to csv file
+        with open('output.csv', 'w') as my_csv:
+            my_csv.write(header)
+            my_csv.write('\n')
+            for item in information:
+                string_tup = str(item)
+                my_csv.write(string_tup)
+                my_csv.write('\n')
 
 
 def main():
